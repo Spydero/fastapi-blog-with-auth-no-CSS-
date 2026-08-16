@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_title }}</title>
+  </head>
+  <body>
+    <a href="/">Back to all posts</a>
+    <h1>{{ post.title }}</h1>
+    <p>
+      by {{ post.author.username }} in {{ post.category.name }} on {{
+      post.created_at.strftime("%B %d %Y") }}
+    </p>
+    <p>{{ post.content }}</p>
+
+    {% if current_user and (current_user.id == post.author_id or
+    current_user.role == "admin") %}
+    <a href="/posts/{{ post.id }}/edit">Edit</a>
+    <form
+      method="post"
+      action="/posts/{{ post.id }}/delete"
+      style="display: inline"
+    >
+      <button type="submit" onclick="return confirm('Delete this post?')">
+        Delete
+      </button>
+    </form>
+    {% endif %}
+
+    <h3>Comments</h3>
+    {% for comment in post.comments %}
+    <p><strong>{{ comment.author.username }}:</strong> {{ comment.content }}</p>
+    {% else %}
+    <p>No comments yet.</p>
+    {% endfor %} {% if current_user %}
+    <form method="post" action="/posts/{{ post.id }}/comments">
+      <textarea name="content" rows="3" required></textarea>
+      <button type="submit">Comment</button>
+    </form>
+    {% else %}
+    <p><a href="/login">Log in</a> to comment.</p>
+    {% endif %}
+  </body>
+</html>
